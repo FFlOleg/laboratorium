@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Polls</title>
+</head>
+<body>
+    <h1>Witamy w aplikacji Polls</h1>
+    <ul>
+    {% for question in latest_question_list %}
+        <li>
+            <a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a>
+        </li>
+    {% empty %}
+        <li>Brak pytań.</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
