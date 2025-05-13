@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -19,16 +18,44 @@ namespace MvcMovie.Controllers
             _context = context;
         }
 
-        // GET: Movies
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string movieGenre, string searchString)
         {
-            return View(await _context.Movie.ToListAsync());
+            if (_context.Movie == null)
+            {
+                return Problem("Entity set 'MvcMovieContext.Movie' is null.");
+            }
+
+            var genreQuery = from m in _context.Movie
+                             orderby m.Genre
+                             select m.Genre;
+
+            var movies = from m in _context.Movie
+                         select m;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                movies = movies.Where(s => s.Title != null && s.Title.ToUpper().Contains(searchString.ToUpper()));
+            }
+
+            if (!string.IsNullOrEmpty(movieGenre))
+            {
+                movies = movies.Where(x => x.Genre == movieGenre);
+            }
+
+            var viewModel = new MovieGenreViewModel
+            {
+                Genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
+                Movies = await movies.ToListAsync(),
+                MovieGenre = movieGenre,
+                SearchString = searchString
+            };
+
+            return View(viewModel);
         }
 
-        // GET: Movies/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Movie == null)
             {
                 return NotFound();
             }
@@ -43,15 +70,11 @@ namespace MvcMovie.Controllers
             return View(movie);
         }
 
-        // GET: Movies/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Movies/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Genre,Price")] Movie movie)
@@ -65,10 +88,9 @@ namespace MvcMovie.Controllers
             return View(movie);
         }
 
-        // GET: Movies/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Movie == null)
             {
                 return NotFound();
             }
@@ -81,9 +103,6 @@ namespace MvcMovie.Controllers
             return View(movie);
         }
 
-        // POST: Movies/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseDate,Genre,Price")] Movie movie)
@@ -116,10 +135,9 @@ namespace MvcMovie.Controllers
             return View(movie);
         }
 
-        // GET: Movies/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Movie == null)
             {
                 return NotFound();
             }
@@ -134,11 +152,15 @@ namespace MvcMovie.Controllers
             return View(movie);
         }
 
-        // POST: Movies/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (_context.Movie == null)
+            {
+                return Problem("Entity set 'MvcMovieContext.Movie' is null.");
+            }
+
             var movie = await _context.Movie.FindAsync(id);
             if (movie != null)
             {
