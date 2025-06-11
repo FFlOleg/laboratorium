@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'nauka/base.html' %}
+{% block content %}
+
+<h1 class="mb-3">📘 Twoje tematy nauki</h1>
+
+<!-- 🔍 Форма поиска -->
+<form method="get" class="mb-3">
+    <input type="text" name="szukaj" placeholder="Szukaj tematów..." class="form-control" value="{{ szukaj }}">
+</form>
+
+<!-- Кнопки -->
+<a class="btn btn-primary mb-3" href="{% url 'dodaj_temat' %}">➕ Dodaj temat</a>
+<a class="btn btn-outline-danger mb-3" href="{% url 'logout' %}">Wyloguj</a>
+
+<!-- Список tematów -->
+<ul class="list-group">
+    {% for temat in tematy %}
+        <li class="list-group-item">
+            <a href="{% url 'szczegoly' temat.id %}">{{ temat.nazwa }}</a>
+        </li>
+    {% empty %}
+        <li class="list-group-item text-muted">Brak tematów</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
+
+</body>
+</html>

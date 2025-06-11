@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'nauka/base.html' %}
+{% block content %}
+
+<h2 class="mb-3">{{ temat.nazwa }} — <small class="text-muted">{{ temat.get_poziom_display }}</small></h2>
+
+<div class="mb-4">
+    <h5>🎯 Osiągnięcia:</h5>
+    <p>{{ temat.osiagniecia }}</p>
+</div>
+
+<div class="mb-4">
+    <h5>📝 Notatki:</h5>
+    <ul class="list-group">
+        {% for n in notatki %}
+            <li class="list-group-item">
+                <strong>{{ n.data.date }}:</strong> {{ n.tresc }}
+            </li>
+        {% empty %}
+            <li class="list-group-item text-muted">Brak notatek</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="mb-3">
+    <a class="btn btn-success" href="{% url 'dodaj_notatke' temat.id %}">➕ Dodaj notatkę</a>
+    <a class="btn btn-secondary" href="{% url 'edytuj_temat' temat.id %}">✏️ Edytuj</a>
+    <a class="btn btn-danger" href="{% url 'usun_temat' temat.id %}">🗑️ Usuń</a>
+</div>
+
+<a class="btn btn-outline-primary" href="{% url 'lista' %}">🔙 Wróć do listy</a>
+
+{% endblock %}
+
+</body>
+</html>
