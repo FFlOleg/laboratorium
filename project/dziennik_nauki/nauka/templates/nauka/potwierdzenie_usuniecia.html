@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'nauka/base.html' %}
+{% block content %}
+
+<div class="card p-4 shadow-sm">
+    <h3 class="mb-3 text-danger">🗑️ Czy na pewno chcesz usunąć temat: <strong>"{{ object.nazwa }}"</strong>?</h3>
+
+    <form method="post" class="mb-3">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">✅ Tak, usuń</button>
+        <a href="{% url 'lista' %}" class="btn btn-secondary ms-2">❌ Nie, wróć</a>
+    </form>
+</div>
+
+{% endblock %}
+
+</body>
+</html>
